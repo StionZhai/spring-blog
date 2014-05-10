@@ -1,0 +1,29 @@
+input[type="text"],
+input[type="password"],
+input[type="email"],
+textarea {
+  border: 1px solid #ccc;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.074);
+  background-color: #fff;
+  padding: 4px 6px;
+  margin-bottom: 10px;
+  font: 13px "Microsoft YaHei";
+  border-radius: 3px;
+  color: #555;
+  vertical-align: middle;
+  outline: 0;
+  -webkit-transition: border linear 0.2s, box-shadow linear 0.2s;
+}
+input[type="text"],
+input[type="password"],
+input[type="email"] {
+  height: 20px;
+  width: 206px;
+}
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus,
+textarea:focus {
+  border-color: rgba(82, 168, 236, 0.8);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px rgba(82, 168, 236, 0.6);
+}

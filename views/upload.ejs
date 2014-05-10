@@ -1,0 +1,15 @@
+<%- include header %>
+<form id="upload-form" method='post' action='/upload' enctype='multipart/form-data' >
+  <input type="file" id="file_upload" name='file1' multiple="true"/><br>
+</form>
+<script src="/javascripts/jquery.uploadify.min.js"></script>
+<script>
+  $(function() {
+      $('#file_upload').uploadify({
+        'buttonText' : '选择文件',
+        'swf'        : '/flash/uploadify.swf',
+        'uploader'   : '/upload'
+      });
+    });
+</script>
+<%- include footer %>

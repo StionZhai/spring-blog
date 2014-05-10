@@ -1,0 +1,28 @@
+<%- include header %>
+<% posts.forEach(function (post, index) { %>
+  <article>
+    <div class="post_date">
+      <span class="date_d"><%= post.time.onlyDay %></span>
+      <span class="date_ym"><%= post.time.month %></span>
+    </div>
+    <h2><a href="/u/<%= post.name %>/<%= post.time.day %>/<%= post.title %>"><%= post.title %></a></h2>
+    <div class="infotop">
+      <span class="info-category-icon">
+        <% post.tags.forEach(function (tag, index) { %>
+          <% if (tag) { %>
+            <a href="/tags/<%= tag %>" class="tag"><%= tag%></a>
+          <% } %>
+        <% }) %>
+      </span>
+      <span class="info-view-icon">
+        pv点击量
+      </span>
+      <span class="info-comment-icon">
+        评论
+      </span>
+    </div>
+    <%- post.post %>
+  </article>
+<% }) %>
+<%- include paging %>
+<%- include footer %>

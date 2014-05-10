@@ -1,0 +1,32 @@
+<%- include header %>
+<div class="util">
+  <div class="post_date util-icon">
+    <span class="icon-users"></span>
+  </div>
+  <form method="post">
+    <table>
+      <tr>
+        <td>用户名：</td>
+        <td><input type="text" name="name" value=""/></td>
+      </tr>
+      <tr>
+        <td>密码：</td>
+        <td><input type="password" name="password" value=""/></td>
+      </tr>
+      <tr>
+        <td>确认密码：</td>
+        <td><input type="password" name="password-repeat"/></td>
+      </tr>
+      <tr>
+        <td>邮箱：</td>
+        <td><input type="email" name="email"/></td>
+      </tr>
+    </table>
+    <!-- 用户名：  <input type="text" name="name" value=""/><br />
+    密码：    <input type="password" name="password" value=""/><br />
+    确认密码：<input type="password" name="password-repeat"/><br />
+    邮箱：    <input type="email" name="email"/><br /> -->
+    <input type="submit" value="注册" class="button glow button-rounded button-flat-action"/>
+  </form>
+</div>
+<%- include footer %>

@@ -1,0 +1,53 @@
+<%- include header %>
+<article style="border:none;">
+  <div class="post_date">
+    <span class="date_d"><%= post.time.onlyDay %></span>
+    <span class="date_ym"><%= post.time.month %></span>
+  </div>
+  <h2><%= post.title %></h2>
+  <p>
+    <% if (user && (user.name == post.name)) { %>
+      <span><a class="edit" href="/edit/<%= post.name %>/<%= post.time.day %>/<%= post.title %>">编辑</a></span>
+      <span><a class="edit" href="/remove/<%= post.name %>/<%= post.time.day %>/<%= post.title %>">删除</a></span>
+    <% } %>
+  </p>
+  <div class="infotop">
+    <span class="info-category-icon">
+      <% post.tags.forEach(function (tag, index) { %>
+        <% if (tag) { %>
+          <a href="/tags/<%= tag %>" class="tag"><%= tag%></a>
+        <% } %>
+      <% }) %>
+    </span>
+    <span class="info-view-icon">
+      pv点击量
+    </span>
+    <span class="info-comment-icon">
+      评论
+    </span>
+  </div>
+  <%- post.post %>
+</article>
+<article style="border:none;">
+  <div class="section-title">
+    <span>为您推荐</span>
+  </div>
+</article>
+<div class="recommend">
+  <ul>
+    <li><a href="#">数据结构</a></li>
+    <li><a href="#">算法</a></li>
+    <li><a href="#">javasc权威指南</a></li>
+    <li><a href="#">html5</a></li>
+    <li><a href="#">css3</a></li>
+    <li><a href="#">node.js</a></li>
+    <li><a href="#">node-webkit</a></li>
+  </ul>
+</div>
+<article style="border:none;">
+  <div class="section-title">
+    <span>评论更精彩</span>
+  </div>
+</article>
+<%- include comment %>
+<%- include footer %>
