@@ -6,6 +6,7 @@
       <span class="date_ym"><%= post.time.month %></span>
     </div>
     <h2><a href="/u/<%= post.name %>/<%= post.time.day %>/<%= post.title %>"><%= post.title %></a></h2>
+    <a href="/u/<%= post.name %>"><img src="<%= post.head %>" class="r_head" /></a>
     <div class="infotop">
       <span class="info-category-icon">
         <% post.tags.forEach(function (tag, index) { %>
@@ -15,10 +16,10 @@
         <% }) %>
       </span>
       <span class="info-view-icon">
-        pv点击量
+        阅读: <%= post.pv %>
       </span>
       <span class="info-comment-icon">
-        评论
+        评论: <%= post.comments.length %>
       </span>
     </div>
     <%- post.post %>

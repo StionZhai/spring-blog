@@ -3,8 +3,9 @@ var mongodb = require('./db')
 ,   marked = require('marked')
 ,   hljs = require('highlight.js');
 
-function Post(name, title, tags, post) {
+function Post(name, head, title, tags, post) {
   this.name = name;
+  this.head = head;
   this.title = title;
   this.tags = tags;
   this.post = post;
@@ -28,11 +29,13 @@ Post.prototype.save = function(callback) {
   //要存入数据库的文档
   var post = {
       name: this.name,
+      head: this.head,
       time: time,
       title: this.title,
       tags: this.tags,
       post: this.post,
-      comments: []
+      comments: [],
+      pv: 0
   };
   //打开数据库
   mongodb.open(function (err, db) {
@@ -119,18 +122,31 @@ Post.getOne = function(name, day, title, callback) {
         "time.day": day,
         "title": title
       }, function (err, doc) {
-        mongodb.close();
         if (err) {
+          mongodb.close();
           return callback(err);
         }
         // 解析 markdown 为 html
         if (doc) {
+          // 每访问一次, pv 值增加 1
+          collection.update({
+            "name": name,
+            "time.day": day,
+            "title": title
+          }, {
+            $inc: {"pv": 1}
+          }, function (err) {
+            mongodb.close();
+            if (err) {
+              return callback(err);
+            }
+          });
           doc.post = marked(doc.post);
           doc.comments.forEach(function (comment) {
             comment.content = marked(comment.content);
           });
+          callback(null, doc); //返回查询的一篇文章
         }
-        callback(null, doc); //返回查询的一篇文章
       });
     });
   });
@@ -257,9 +273,9 @@ Post.getArchive = function(callback) {
 
 //返回所有标签
 Post.getTags = function (callback) {
-  if (!callback) {
-    callback = doReturn;
-  }
+  // if (!callback) {
+  //   callback = Post.doReturn;
+  // }
   mongodb.open(function (err, db) {
     if (err) {
       return callback(err);
@@ -313,10 +329,42 @@ Post.getTag = function (tag, callback) {
   });
 };
 
-// 如果方法仅仅是需要返回值得,那就仅仅返回值
-function doReturn(err, docs) {
-  if (err){
-    return err;
-  }
-  return docs;
-}
+// // 如果方法仅仅是需要返回值得,那就仅仅返回值
+// Post.doReturn = function (err, docs) {
+//   if (err){
+//     return err;
+//   }
+//   return docs;
+// }
+
+
+// 返回通过标题关键字查询的所有文章信息
+Post.search = function(keyword, callback) {
+  mongodb.open(function (err, db) {
+    if (err) {
+      return callback(err);
+    }
+    db.collection('posts', function (err, collection) {
+      if (err) {
+        mongodb.close();
+        return callback(err);
+      }
+      var pattern = new RegExp("^.*" + keyword + ".*$", "i");
+      collection.find({
+        "title": pattern
+      }, {
+        "name": 1,
+        "time": 1,
+        "title": 1
+      }).sort({
+        time: -1
+      }).toArray(function (err, docs) {
+        mongodb.close();
+        if (err) {
+          return callback(err);
+        }
+        callback(null, docs);
+      });
+    });
+  });
+};

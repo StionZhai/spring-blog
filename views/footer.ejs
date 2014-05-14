@@ -10,19 +10,23 @@
         </ul>
 
         <div class="tab-content show">
-          <div class="tags">
+          <div class="tags cloud-tags">
             <a href="#">生活</a>
             <a href="#">数据结构与算法</a>
           </div>
         </div>
         <div class="tab-content">
-          <div class="tags">
+          <div class="tags" id="attention-tags">
             <a href="http://www.cnblogs.com/lhb25/category/146076.html" title="前端" target="_blank">梦想天空</a>
             <a href="https://github.com/JacksonTian/fks" title="node.js" target="_blank">朴灵</a>
             <a href="http://ucdok.com/" title="node.js" target="_blank">老雷</a>
             <a href="http://cnodejs.org/user/nswbmw" title="node.js" target="_blank">nswbmw</a>
             <a href="http://bestcbooks.com/B00HLX035Q" target="_blank">计算机书籍控</a>
             <a href="http://www.36ria.com/" title="前端">明河</a>
+            <% user.attentions.forEach(function (attention) { %>
+              <a href="<%= attention.address %>"><%= attention.atnName%></a>
+            <% }) %>
+            <a href="#" class="tags-add"><span class="icon-plus"></span></a>
           </div>
         </div>
         <% if (user) { %>
@@ -46,6 +50,28 @@
       Copyright © 2014-2014 滢汐丶冰. Powered by nswbmw and <。)#)))≦. QQ:2574046554
     </div>
   </footer>
+  <div class="pop-mask"></div>
+  <div class="pop-box">
+    <div class="pop-title">
+      添加关注
+    </div>
+    <div class="pop-content">
+      <form method="post" action="/add-attention">
+        <table>
+          <tr>
+            <td>标签名：</td>
+            <td><input type="text" name="atnName"/></td>
+          </tr>
+          <tr>
+            <td>地址：</td>
+            <td><input type="text" name="address"/></td>
+          </tr>
+        </table>
+        <input type="submit" value="确定" class="button glow button-rounded button-flat-action" style="width: 152px;"/>
+        <input type="button" value="取消" class="button glow button-rounded button-flat-caution" style="width: 152px;"/>
+      </form>
+    </div>
+  </div>
   <script src="/javascripts/base.js"></script>
 </body>
 </html>

@@ -1,0 +1,45 @@
+.pop-mask{
+	position: fixed;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 100%;
+	display: none;
+	background: rgba(0,0,0,0.5);
+	z-index: 3;
+}
+.pop-box{
+	position:fixed;
+	top: 0;
+	left: 0;
+	z-index:10;
+	width: 500px;
+	background: #fff;
+	border: 1px solid #999;
+	box-shadow: 1px 1px 15px hsla(0,21%,60%,.6);
+	border-radius: 5px;
+	display: none;
+}
+.pop-title{
+	font-family: "Microsoft YaHei";
+	font-weight: bold;
+	text-align: center;
+	line-height: 30px;
+	padding: 5px;
+	background: rgb(248,248,248);
+	border-radius: 3px 3px 0 0;
+}
+.close{
+	float:right;
+	position:absolute;
+	top:12px;
+	right:5px;
+	cursor: pointer;
+}
+.pop-content{
+	padding: 10px;
+}
+.to-fit{
+	height: 550px;
+	overflow: scroll;
+}

@@ -6,6 +6,7 @@ var crypto = require('crypto')
 ,   User = require('../models/user.js')
 ,   Post = require('../models/post.js')
 ,   Comment = require('../models/comment.js')
+,   Attention = require('../models/attention.js')
 ,   fs = require('fs');
 
 module.exports = function(app) {
@@ -127,7 +128,7 @@ module.exports = function(app) {
   app.post('/post', function (req, res) {
     var currentUser = req.session.user
     ,   tags = [req.body.tag1, req.body.tag2, req.body.tag3]
-    ,   post = new Post(currentUser.name, req.body.title, tags, req.body.post);
+    ,   post = new Post(currentUser.name, currentUser.head, req.body.title, tags, req.body.post);
     post.save(function (err) {
       if(err){
         req.flash('error', err);
@@ -162,7 +163,7 @@ module.exports = function(app) {
         fs.unlinkSync(req.files[i].path);
         console.log('Successfully removed an empty file!');
       } else {
-        var target_path = './public/images/' + req.files[i].name;
+        var target_path = './public/images/upload/' + req.files[i].name;
         // 使用同步的方式重命名一个文件
         fs.renameSync(req.files[i].path, target_path);
         console.log('Successfully renamed a file!');
@@ -199,6 +200,22 @@ module.exports = function(app) {
     });
   });
 
+  app.get('/search', function (req, res) {
+    Post.search(req.query.keyword, function (err, posts) {
+      if (err) {
+        req.flash('error', err);
+        return res.redirect('/');
+      }
+      res.render('search', {
+        title: "SEARCH: " + req.query.keyword,
+        posts: posts,
+        user: req.session.user,
+        success: req.flash('success').toString(),
+        error: req.flash('error').toString()
+      });
+    });
+  });
+
   // 文章存档请求处理
   app.get('/archive', function (req, res) {
     Post.getArchive(function (err, posts) {
@@ -216,6 +233,13 @@ module.exports = function(app) {
     });
   });
 
+  // 获得所有的标签
+  app.get('/tags', function (req, res) {
+    Post.getTags(function (err, tags) {
+      res.send(tags);
+    });
+  });
+
   // 标签请求处理
   app.get('/tags/:tag', function (req, res) {
     Post.getTag(req.params.tag, function (err, posts) {
@@ -224,7 +248,7 @@ module.exports = function(app) {
         return res.redirect('/');
       }
       res.render('tag', {
-        title: 'TAG:' + req.params.tag,
+        title: 'TAG: ' + req.params.tag,
         posts: posts,
         user: req.session.user,
         success: req.flash('success').toString(),
@@ -237,6 +261,7 @@ module.exports = function(app) {
     Post.getOne(req.params.name, req.params.day, req.params.title, function (err, post) {
       if (err) {
         req.flash('error', err);
+        console.log(err);
         return res.redirect('/');
       }
       res.render('article', {
@@ -252,8 +277,12 @@ module.exports = function(app) {
     var date = new Date()
     ,   time = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + ' ' +
                date.getHours() + ':' + (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes());
+    var md5 = crypto.createHash('md5')
+    ,   email_MD5 = md5.update(req.body.email.toLowerCase()).digest('hex')
+    ,   head = 'http://www.gravatar.com/avatar/' + email_MD5 + '?s=48';
     var comment = {
       name: req.body.name,
+      head: head,
       email: req.body.email,
       website: req.body.website,
       time: time,
@@ -266,6 +295,32 @@ module.exports = function(app) {
         return res.redirect('back');
       }
       req.flash('success', '留言成功!');
+      res.redirect('back');
+    });
+  });
+
+  // 关注标签
+  app.get('/getAtnName', function (req, res) {
+    User.getAttentions(req.session.user.name, function (err, docs) {
+      if (err) {
+        return res.send(err);
+      }
+      res.send(docs);
+    });
+  });
+  app.post('/add-attention', function (req, res) {
+    var attention = {
+      name: req.session.user.name,
+      atnName: req.body.atnName,
+      address: req.body.address
+    };
+    var newAttention = new Attention(attention.name, attention.atnName, attention);
+    newAttention.save(function (err) {
+      if (err) {
+        req.flash('error', err);
+        return res.redirect('back');
+      }
+      req.flash('success', '添加成功!');
       res.redirect('back');
     });
   });
@@ -312,6 +367,11 @@ module.exports = function(app) {
       req.flash('success', '删除成功!');
       res.redirect('/');
     });
+  });
+
+  // 添加404页面
+  app.use(function (req, res) {
+    res.render('404');
   });
 
   // 页面权限控制

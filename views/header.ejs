@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>StionZhai</title>
+  <link rel="stylesheet" href="/stylesheets/pop-box.css">
   <link rel="stylesheet" href="/stylesheets/googlecode.css">
   <% if (title == '文件上传') { %>
     <link rel="stylesheet" href="/stylesheets/uploadify.css">
@@ -12,6 +13,7 @@
   <link rel="stylesheet" href="/stylesheets/form.css">
   <link rel="stylesheet" href="/stylesheets/style.css">
   <script src="/javascripts/jquery-1.11.0.min.js"></script>
+  <script src="/javascripts/popBox.js"></script>
   <script src="/javascripts/highlight.pack.js"></script>
   <script>
     hljs.initHighlightingOnLoad();
@@ -28,18 +30,20 @@
       <ul>
         <li><a href="/">首页</a></li>
         <li><a href="#">书香</a></li>
-        <li><a href="#">相册<span></span></a></li>
-        <li><a href="/cloud" target="_blank">在窗外<span></span></a></li>
-        <li><a href="#">Delphi<span></span></a></li>
-        <li><a href="#">密码学</a></li>
+        <li><a href="#">相册</a></li>
+        <li><a href="/cloud" target="_blank">在窗外</a></li>
+        <li><a href="#">时间轴</a></li>
+        <li><a href="#">我的兴趣<span></span></a></li>
         <li><a href="#">揭秘系列</a></li>
         <li><a href="#">数据结构</a></li>
         <li><a href="#">更多<span></span></a></li>
         <li><a href="#">关注我<span></span></a></li>
       </ul>
       <div class="search-site">
-        <input type="submit" value="" id="searchsubmit" class="button">
-        <input type="text" id="s">
+        <form action="/search" method="get">
+          <input type="submit" value="" id="searchsubmit" class="button">
+          <input type="text" name="keyword" id="s">
+        </form>
       </div>
     </nav>
     <div id="map">
