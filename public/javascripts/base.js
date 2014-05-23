@@ -19,12 +19,32 @@ $(function(){
     $('.cloud-tags').html(str);
   });
 
-  // 添加关注
-  $('.tags-add').click(function () {
-    showPopBox(null, 330);
-    return false;
+  $('#atn-tab').on('mouseover', function () {
+    // ajax获取所有关注标签
+    $.get('/getAtnName', function (data) {
+      var str = '';
+      data[0].attentions.forEach(function (tag) {
+        if (tag) {
+          str += '<a href="' + tag.address + '" target="_blank">' + tag.atnName + '</a>';
+        }
+      });
+      str = str + '<a href="#" class="tags-add" id="tags-add" onclick="addAtn()"><span class="icon-plus"></span></a>';
+      $('#attention-tags').html(str);
+    });
   });
+
+  // 添加关注
+  // $('.tags-add').on('click', function () {
+  //   showPopBox(null, 330);
+  //   return false;
+  // });
+
   $('.button-flat-caution').click(function () {
     closeAll();
   });
 });
+
+function addAtn() {
+  showPopBox(null, 330);
+  return false;
+}

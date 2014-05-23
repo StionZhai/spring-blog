@@ -3,9 +3,11 @@
       <div class="widget">
         <ul class="tab-menu">
           <li class="active">云标签</li>
-          <li>关注</li>
           <% if (user) { %>
+            <li id="atn-tab">关注</li>
             <li>操作</li>
+          <% } else { %>
+            <li>关注</li>
           <% } %>
         </ul>
 
@@ -22,11 +24,7 @@
             <a href="http://ucdok.com/" title="node.js" target="_blank">老雷</a>
             <a href="http://cnodejs.org/user/nswbmw" title="node.js" target="_blank">nswbmw</a>
             <a href="http://bestcbooks.com/B00HLX035Q" target="_blank">计算机书籍控</a>
-            <a href="http://www.36ria.com/" title="前端">明河</a>
-            <% user.attentions.forEach(function (attention) { %>
-              <a href="<%= attention.address %>"><%= attention.atnName%></a>
-            <% }) %>
-            <a href="#" class="tags-add"><span class="icon-plus"></span></a>
+            <a href="http://www.36ria.com/" title="前端" target="_blank">明河</a>
           </div>
         </div>
         <% if (user) { %>

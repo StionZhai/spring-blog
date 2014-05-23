@@ -96,3 +96,28 @@ User.getAttentions = function (name, callback) {
     });
   });
 };
+
+User.test1 = function (name) {
+  mongodb.open(function (err, db) {
+    if (err) {
+      return err;
+    }
+    db.collection('users', function (err, collection) {
+      if (err) {
+        mongodb.close();
+        return err;
+      }
+      collection.find({
+        "name": name
+      },{
+        "attentions": 1
+      }).toArray(function (err, docs) {
+        mongodb.close();
+        if (err) {
+          return err;
+        }
+        return docs;
+      });
+    });
+  });
+};
