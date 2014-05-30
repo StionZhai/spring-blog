@@ -5,8 +5,7 @@
       <span class="date_d"><%= post.time.onlyDay %></span>
       <span class="date_ym"><%= post.time.month %></span>
     </div>
-    <h2><a href="/u/<%= post.name %>/<%= post.time.day %>/<%= post.title %>"><%= post.title %></a></h2>
-    <!-- <a href="/u/<%= post.name %>"><img src="<%= post.head %>" class="r_head" /></a> -->
+    <h2 class="blog-title"><a href="/u/<%= post.name %>/<%= post.time.day %>/<%= post.title %>"><%= post.title %></a></h2>
     <div class="infotop">
       <span class="info-category-icon">
         <% post.tags.forEach(function (tag, index) { %>
@@ -21,8 +20,21 @@
       <span class="info-comment-icon">
         评论: <%= post.comments.length %>
       </span>
+      <span class="info-reprint-icon">
+        转载:
+        <% if (post.reprint_info.reprint_to) { %>
+          <%= post.reprint_info.reprint_to.length %>
+        <% } else { %>
+          <%= 0 %>
+        <% } %>
+      </span>
+      <% if (post.reprint_info.reprint_from) { %>
+        <br><a href="/u/<%= post.reprint_info.reprint_from.name %>/<%= post.reprint_info.reprint_from.day %>/<%= post.reprint_info.reprint_from.title %>">原文链接</a>
+      <% } %>
     </div>
-    <%- post.post %>
+    <div class="summary-list">
+      <%- post.summary %>
+    </div>
   </article>
 <% }) %>
 <%- include paging %>

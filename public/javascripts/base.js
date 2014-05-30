@@ -23,11 +23,13 @@ $(function(){
     // ajax获取所有关注标签
     $.get('/getAtnName', function (data) {
       var str = '';
-      data[0].attentions.forEach(function (tag) {
-        if (tag) {
-          str += '<a href="' + tag.address + '" target="_blank">' + tag.atnName + '</a>';
-        }
-      });
+      if (data[0].attentions) {
+        data[0].attentions.forEach(function (tag) {
+          if (tag) {
+            str += '<a href="' + tag.address + '" target="_blank">' + tag.atnName + '</a>';
+          }
+        });
+      }
       str = str + '<a href="#" class="tags-add" id="tags-add" onclick="addAtn()"><span class="icon-plus"></span></a>';
       $('#attention-tags').html(str);
     });

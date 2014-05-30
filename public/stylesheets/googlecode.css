@@ -18,6 +18,8 @@ Google Code style (c) Aahan Krish <geekpanth3r@gmail.com>
   border-right: none;
   border-left: none;
   padding-left: 15px;
+  margin-bottom: 5px;
+  overflow: auto;
 }
 
 .hljs-comment,

@@ -3,12 +3,13 @@ var mongodb = require('./db')
 ,   marked = require('marked')
 ,   hljs = require('highlight.js');
 
-function Post(name, head, title, tags, post) {
+function Post(name, head, title, tags, summary, post) {
   this.name = name;
   this.head = head;
   this.title = title;
   this.tags = tags;
   this.post = post;
+  this.summary = summary;
 }
 
 module.exports = Post;
@@ -32,9 +33,11 @@ Post.prototype.save = function(callback) {
       head: this.head,
       time: time,
       title: this.title,
+      summary: this.summary,
       tags: this.tags,
       post: this.post,
       comments: [],
+      reprint_info: {},
       pv: 0
   };
   //打开数据库
@@ -94,7 +97,9 @@ Post.getTen = function(name, page, callback) {
           }
           // 解析 markdown 为 html
           docs.forEach(function (doc) {
-            doc.post = marked(doc.post);
+            if (doc.summary){
+              doc.summary = marked(doc.summary);
+            }
           });
           callback(null, docs, total);
         });
@@ -182,7 +187,7 @@ Post.edit = function (name, day, title, callback) {
 };
 
 // 更新一篇文章及相关信息
-Post.update = function (name, day, title, post, callback) {
+Post.update = function (name, day, title, summary, post, callback) {
   // 打开数据库
   mongodb.open(function (err, db) {
     if (err) {
@@ -199,7 +204,10 @@ Post.update = function (name, day, title, post, callback) {
         "time.day": day,
         "title": title
       }, {
-        $set: {post: post}
+        $set: {
+          summary: summary,
+          post: post
+        }
       }, function (err) {
         mongodb.close();
         if (err) {
@@ -211,30 +219,69 @@ Post.update = function (name, day, title, post, callback) {
   });
 };
 
-// 删除一篇文章
-Post.remove = function (name, day, title, callback) {
+//删除一篇文章
+Post.remove = function(name, day, title, callback) {
+  //打开数据库
   mongodb.open(function (err, db) {
     if (err) {
       return callback(err);
     }
+    //读取 posts 集合
     db.collection('posts', function (err, collection) {
       if (err) {
         mongodb.close();
         return callback(err);
       }
-      // 根据用户名,日期和标题查找并删除一篇文章
-      collection.remove({
+      //查询要删除的文档
+      collection.findOne({
         "name": name,
         "time.day": day,
         "title": title
-      }, {
-        w: 1
-      }, function (err) {
-        mongodb.close();
+      }, function (err, doc) {
         if (err) {
-          return callback();
+          mongodb.close();
+          return callback(err);
         }
-        callback(null);
+        //如果有 reprint_from，即该文章是转载来的，先保存下来 reprint_from
+        var reprint_from = "";
+        if (doc.reprint_info.reprint_from) {
+          reprint_from = doc.reprint_info.reprint_from;
+        }
+        if (reprint_from != "") {
+          //更新原文章所在文档的 reprint_to
+          collection.update({
+            "name": reprint_from.name,
+            "time.day": reprint_from.day,
+            "title": reprint_from.title
+          }, {
+            $pull: {
+              "reprint_info.reprint_to": {
+                "name": name,
+                "day": day,
+                "title": title
+            }}
+          }, function (err) {
+            if (err) {
+              mongodb.close();
+              return callback(err);
+            }
+          });
+        }
+
+        //删除转载来的文章所在的文档
+        collection.remove({
+          "name": name,
+          "time.day": day,
+          "title": title
+        }, {
+          w: 1
+        }, function (err) {
+          mongodb.close();
+          if (err) {
+            return callback(err);
+          }
+          callback(null);
+        });
       });
     });
   });
@@ -364,6 +411,84 @@ Post.search = function(keyword, callback) {
           return callback(err);
         }
         callback(null, docs);
+      });
+    });
+  });
+};
+
+// 转载一篇文章
+Post.reprint = function(reprint_from, reprint_to, callback) {
+  mongodb.open(function (err, db) {
+    if (err) {
+      return callback(err);
+    }
+    db.collection('posts', function (err, collection) {
+      if (err) {
+        mongodb.close();
+        return callback(err);
+      }
+      // 找到被转载的文章
+      collection.findOne({
+        "name": reprint_from.name,
+        "time.day": reprint_from.day,
+        "title": reprint_from.title
+      }, function (err, doc) {
+        if (err) {
+          mongodb.close();
+          return callback(err);
+        }
+
+        var date = new Date();
+        var time = {
+          date: date,
+          year: date.getFullYear(),
+          month: date.getFullYear() + '.' + (date.getMonth() + 1),
+          day: date.getFullYear() + '.' + (date.getMonth() + 1) + '.' + date.getDate(),
+          minute: date.getFullYear() + "." + (date.getMonth() + 1) + "." + date.getDate() + " " +
+            date.getHours() + ":" + (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()),
+          onlyDay : date.getDate()
+        };
+
+        delete doc._id;// 注意删掉原来的 _id
+
+        doc.name = reprint_to.name;
+        doc.head = reprint_to.head;
+        doc.time = time;
+        doc.title = (doc.title.search(/[转载]/) > -1) ? doc.title : "[转载]" + doc.title;
+        doc.comments = [];
+        doc.reprint_info = {"reprint_from": reprint_from};
+        doc.pv = 0;
+
+        // 更新被转载的原文档的 reprint_info 内的 reprint_to
+        collection.update({
+          "name": reprint_from.name,
+          "time.day": reprint_from.day,
+          "title": reprint_from.title
+        }, {
+          $push: {
+            "reprint_info.reprint_to": {
+              "name": doc.name,
+              "day": time.day,
+              "title": doc.title
+            }
+          }
+        }, function (err) {
+          if (err) {
+            mongodb.close();
+            return callback(err);
+          }
+        });
+
+        // 将转载生成的副本修改后存入数据库, 并返回存储后的文档
+        collection.insert(doc, {
+          safe: true
+        }, function (err, post) {
+          mongodb.close();
+          if (err) {
+            return callback(err);
+          }
+          callback(err, post[0]);
+        });
       });
     });
   });

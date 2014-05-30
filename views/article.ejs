@@ -4,11 +4,32 @@
     <span class="date_d"><%= post.time.onlyDay %></span>
     <span class="date_ym"><%= post.time.month %></span>
   </div>
-  <h2><%= post.title %></h2>
+  <h2 class="blog-title">
+    [<a href="/u/<%= post.name %>"><%= post.name %></a>]
+    <%= post.title %>
+  </h2>
   <p>
     <% if (user && (user.name == post.name)) { %>
       <span><a class="edit" href="/edit/<%= post.name %>/<%= post.time.day %>/<%= post.title %>">编辑</a></span>
       <span><a class="edit" href="/remove/<%= post.name %>/<%= post.time.day %>/<%= post.title %>">删除</a></span>
+    <% } %>
+    <% var flag = 1 %>
+    <% if (user && (user.name != post.name)) { %>
+      <% if ((post.reprint_info.reprint_from != undefined) && (user.name == post.reprint_info.reprint_from.name)) { %>
+        <% flag = 0 %>
+      <% } %>
+      <% if ((post.reprint_info.reprint_to != undefined)) { %>
+        <% post.reprint_info.reprint_to.forEach(function (reprint_to, index) { %>
+          <% if (user.name == reprint_to.name) { %>
+            <% flag = 0 %>
+          <% } %>
+        <% }) %>
+      <% } %>
+    <% } else { %>
+      <% flag = 0 %>
+    <% } %>
+    <% if (flag) { %>
+      <span><a class="edit" href="/reprint/<%= post.name %>/<%= post.time.day %>/<%= post.title %>">转载</a></span>
     <% } %>
   </p>
   <div class="infotop">
@@ -25,6 +46,17 @@
     <span class="info-comment-icon">
       评论: <%= post.comments.length %>
     </span>
+    <span class="info-reprint-icon">
+      转载:
+      <% if (post.reprint_info.reprint_to) { %>
+        <%= post.reprint_info.reprint_to.length %>
+      <% } else { %>
+        <%= 0 %>
+      <% } %>
+    </span>
+    <% if (post.reprint_info.reprint_from) { %>
+      <br><a href="/u/<%= post.reprint_info.reprint_from.name %>/<%= post.reprint_info.reprint_from.day %>/<%= post.reprint_info.reprint_from.title %>">原文链接</a>
+    <% } %>
   </div>
   <%- post.post %>
 </article>

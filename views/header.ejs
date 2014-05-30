@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>StionZhai</title>
+  <title><%= title %></title>
   <link rel="stylesheet" href="/stylesheets/pop-box.css">
   <link rel="stylesheet" href="/stylesheets/googlecode.css">
   <% if (title == '文件上传') { %>
@@ -23,20 +23,36 @@
   <div id="container">
     <header>
       <br>
-      <h1>匆匆那年</h1>
-      有些人错过了,永远无法再回到从前;有些人即使遇到了,永远都无法在一起,这些都是一种刻骨铭心的痛.
+      <% if (user) { %>
+        <h1><%= user.name %></h1>
+        <%= user.description%>
+      <% } else { %>
+        <h1>匆匆那年</h1>有些人错过了,永远无法再回到从前;有些人即使遇到了,永远都无法在一起,这些都是一种刻骨铭心的痛.
+      <% } %>
     </header>
     <nav>
       <ul>
         <li><a href="/">首页</a></li>
         <li><a href="#">书香</a></li>
         <li><a href="#">相册</a></li>
-        <li><a href="/cloud" target="_blank">在窗外</a></li>
+        <li><a href="/cloud" target="_blank">窗外</a></li>
         <li><a href="#">时间轴</a></li>
-        <li><a href="#">我的兴趣<span></span></a></li>
-        <li><a href="#">数据结构</a></li>
-        <li><a href="#">更多<span></span></a></li>
-        <li><a href="#">关注我<span></span></a></li>
+        <li class="sub-menu">
+          <a href="#">我的兴趣<span></span></a>
+          <ul>
+            <li><a href="#">听音乐</a></li>
+            <li><a href="#">play basketball</a></li>
+            <li><a href="#">独自发呆</a></li>
+            <li><a href="#">数据结构</a></li>
+          </ul>
+        </li>
+        <li class="sub-menu">
+          <a href="#">更多<span></span></a>
+          <ul>
+            <li><a href="#">意见反馈</a></li>
+          </ul>
+        </li>
+        <li><a href="#">关于</a></li>
       </ul>
       <div class="search-site">
         <form action="/search" method="get">
@@ -48,7 +64,11 @@
     <div id="map">
       <div class="position">
         当前位置:
-        <%= title%>
+        <% if (title != '主页') { %>
+          <a href="/">首页</a> &gt; <%= title %>
+        <% } else { %>
+          <%= title %>
+        <% } %>
       </div>
     </div>
     <div class="main">
