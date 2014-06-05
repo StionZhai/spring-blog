@@ -44,6 +44,12 @@ $(function(){
   $('.button-flat-caution').click(function () {
     closeAll();
   });
+  $('#sub-commit').click(function () {
+    if($('#cmt-content').val() == '') {
+      alert('亲,空气是不能参与评论的 ^ ^');
+      return false;
+    }
+  });
 });
 
 function addAtn() {
