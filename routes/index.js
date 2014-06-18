@@ -262,15 +262,20 @@ module.exports = function(app) {
       time: time,
       content: req.body.content
     };
-    var newComment = new Comment(req.params.name, req.params.day, req.params.title, comment);
-    newComment.save(function (err) {
-      if (err) {
-        req.flash('error', err);
-        return res.redirect('back');
-      }
-      req.flash('success', '留言成功!');
+    if (comment.content != '' && comment.name != '') {
+      var newComment = new Comment(req.params.name, req.params.day, req.params.title, comment);
+      newComment.save(function (err) {
+        if (err) {
+          req.flash('error', err);
+          return res.redirect('back');
+        }
+        req.flash('success', '留言成功!');
+        res.redirect('back');
+      });
+    } else {
+      req.flash('error', '未添加姓名或者留言内容!');
       res.redirect('back');
-    });
+    }
   });
 
   // 关注标签
@@ -296,6 +301,27 @@ module.exports = function(app) {
       }
       req.flash('success', '添加成功!');
       res.redirect('back');
+    });
+  });
+  // 删除标签
+  app.post('/remove-tag', function (req, res) {
+    Attention.remove(req.session.user.name, req.body.atnName, function (err) {
+      if (err) {
+        req.flash('error', err);
+      } else {
+        res.send('success');
+      }
+    });
+  });
+  // 更新标签
+  app.post('/update-atn', function (req, res) {
+    Attention.update(req.session.user.name, req.body.preTag, req.body.tag, req.body.address, function (err) {
+      if (err) {
+        req.flash('error', err);
+        res.send(err);
+      } else {
+        res.send('success');
+      }
     });
   });
 

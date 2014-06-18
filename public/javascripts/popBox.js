@@ -43,7 +43,7 @@ function showPopBox(id, width, height){
 	}
 
 	$('.pop-mask').show();
-	popBox.show(300);
+	popBox.show();
 	$('.pop-mask').click(function(){
 		closeAll();
 	});

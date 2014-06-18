@@ -554,3 +554,31 @@ article hr {
   border-bottom: 3px solid #82C83C;
 }
 
+/*标签管理*/
+.tag-manager {
+  list-style: none;
+}
+.tag-manager li {
+  min-height: 26px;
+  line-height: 26px;
+  font-size: 14px;
+}
+.tag-manager li a {
+  color: #777;
+}
+.tag-manager li a:hover {
+  color: #82C83C;
+}
+.tag-manager div {
+  margin-top: 4px;
+  display: none;
+}
+
+
+.fly-ri {
+  float: right;
+  margin: 0 4px;
+}
+.color-black {
+  color: #333;
+}

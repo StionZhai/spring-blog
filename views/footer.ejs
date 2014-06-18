@@ -35,7 +35,7 @@
               <a title="存档" href="/u/<%= user.name %>">存档</a>
               <a title="所有文章" href="/archive">所有文章</a>
               <a title="看看大家" href="/All">看看大家</a>
-              <a href="/logout">登出</a>
+              <a href="/logout"><span class="icon-exit"></span></a>
             </div>
           </div>
         <% } %>
@@ -51,7 +51,7 @@
     </div>
   </footer>
   <div class="pop-mask"></div>
-  <div class="pop-box">
+  <div class="pop-box" id="add-atn">
     <div class="pop-title">
       添加关注
     </div>
@@ -70,6 +70,16 @@
         <input type="submit" value="确定" class="button glow button-rounded button-flat-action" style="width: 152px;"/>
         <input type="button" value="取消" class="button glow button-rounded button-flat-caution" style="width: 152px;"/>
       </form>
+    </div>
+  </div>
+  <div class="pop-box" id="manage-atn">
+    <div class="pop-title">
+      关注标签管理
+    </div>
+    <div class="pop-content">
+      <ul class="tag-manager">
+
+      </ul>
     </div>
   </div>
   <script src="/javascripts/base.js"></script>
